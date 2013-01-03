@@ -249,11 +249,20 @@
   (ssh-port [_] 22)
   (primary-ip [_]
     (try+
-      (manager/get-ip node)
-      (catch Exception _
-        ;; fallback to the ip stored in the node's extra parameters
-        (manager/get-extra-data node ip-tag))))
-  (private-ip [_] nil)
+     (manager/get-ip node)
+     (catch Exception _
+       ;; fallback to the ip stored in the node's extra parameters
+       (manager/get-extra-data node ip-tag))))
+  ;;(private-ip [_] nil)
+  (private-ip [_]
+    (let [priv-ip (try+
+                   (manager/get-ip node)
+                   (catch Exception _
+                     ;; fallback to the ip stored in the node's extra parameters
+                     (manager/get-extra-data node ip-tag)))]
+      (println "PALLET VMFEST NODE PRIVATE IP" priv-ip)
+      priv-ip
+      ))
   (is-64bit? [_]
     (let [meta (image-meta-from-node node)
           os-64-bit (:os-64-bit meta)
